@@ -4,6 +4,7 @@ from database import engine, SessionLocal
 import models
 from seed import seed_categories
 from routers import categories, projects, tasks, weekly_entries
+from routers.summary import router as summary_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -21,6 +22,7 @@ app.include_router(categories.router)
 app.include_router(projects.router)
 app.include_router(tasks.router)
 app.include_router(weekly_entries.router)
+app.include_router(summary_router)
 
 
 @app.on_event("startup")

@@ -1,0 +1,26 @@
+@if (totalHours === 0) {
+  <p class="notice">No hours logged yet.</p>
+} @else {
+  <div class="breakdown-total">
+    {{ totalHours | number:'1.2-2' }} total hours logged
+  </div>
+
+  <div class="breakdown-table">
+    <div class="breakdown-header">
+      <span>Category</span>
+      <span>Hours</span>
+      <span>Share</span>
+      <span></span>
+    </div>
+    @for (row of rows; track row.category_name) {
+      <div class="breakdown-row" [class.breakdown-row--zero]="row.total_hours === 0">
+        <span class="cat-name">{{ row.category_name }}</span>
+        <span class="cat-hours">{{ row.total_hours | number:'1.2-2' }}</span>
+        <span class="cat-pct">{{ row.pct | number:'1.1-1' }}%</span>
+        <div class="cat-bar-cell">
+          <div class="cat-bar" [style.width.%]="row.pct"></div>
+        </div>
+      </div>
+    }
+  </div>
+}

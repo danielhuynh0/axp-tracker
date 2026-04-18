@@ -1,5 +1,9 @@
 <header class="app-header">
   <a routerLink="/projects" class="app-title">AXP Tracker</a>
+  <nav class="app-nav">
+    <a routerLink="/projects" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">Projects</a>
+    <a routerLink="/summary" routerLinkActive="active">Summary</a>
+  </nav>
 </header>
 
 <main class="app-main">

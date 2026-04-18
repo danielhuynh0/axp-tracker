@@ -24,6 +24,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'summary',
+    loadComponent: () =>
+      import('./pages/global-summary/global-summary.component').then(
+        (m) => m.GlobalSummaryComponent
+      ),
+  },
+  {
     path: 'tasks/:taskId/weeks',
     loadComponent: () =>
       import('./pages/task-weeks/task-weeks.component').then(

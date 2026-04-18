@@ -30,6 +30,14 @@
   gap: 0.6rem;
 }
 
+.summary-section {
+  margin-top: 2rem;
+
+  .card {
+    padding: 1.25rem 1.5rem;
+  }
+}
+
 .task-row {
   display: flex;
   align-items: center;

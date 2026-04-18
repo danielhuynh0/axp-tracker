@@ -16,6 +16,24 @@
   text-transform: uppercase;
 }
 
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-left: 2.5rem;
+
+  a {
+    color: #aaa;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s;
+
+    &:hover { color: #fff; }
+    &.active { color: #fff; }
+  }
+}
+
 .app-main {
   max-width: 960px;
   margin: 0 auto;

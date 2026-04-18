@@ -4,19 +4,22 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectService } from '../../services/project.service';
 import { TaskService } from '../../services/task.service';
+import { SummaryService, CategorySummary } from '../../services/summary.service';
 import { Project } from '../../models/project.model';
 import { Task } from '../../models/task.model';
+import { CategoryBreakdownComponent } from '../../components/category-breakdown/category-breakdown.component';
 
 @Component({
   selector: 'app-project-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, CategoryBreakdownComponent],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss',
 })
 export class ProjectDetailComponent implements OnInit {
   project: Project | null = null;
   tasks: Task[] = [];
+  summaryData: CategorySummary[] = [];
   showForm = false;
   newTaskName = '';
   newTaskDescription = '';
@@ -26,7 +29,8 @@ export class ProjectDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private projectService: ProjectService,
-    private taskService: TaskService
+    private taskService: TaskService,
+    private summaryService: SummaryService
   ) {}
 
   ngOnInit(): void {
@@ -38,6 +42,9 @@ export class ProjectDetailComponent implements OnInit {
     this.taskService.getByProject(id).subscribe({
       next: (tasks) => (this.tasks = tasks),
       error: () => (this.error = 'Failed to load tasks.'),
+    });
+    this.summaryService.getByProject(id).subscribe({
+      next: (d) => (this.summaryData = d),
     });
   }
 
@@ -69,7 +76,12 @@ export class ProjectDetailComponent implements OnInit {
     event.stopPropagation();
     if (!confirm('Delete this task and all its logged hours?')) return;
     this.taskService.delete(taskId).subscribe({
-      next: () => (this.tasks = this.tasks.filter((t) => t.id !== taskId)),
+      next: () => {
+        this.tasks = this.tasks.filter((t) => t.id !== taskId);
+        this.summaryService.getByProject(this.project!.id).subscribe({
+          next: (d) => (this.summaryData = d),
+        });
+      },
       error: () => (this.error = 'Failed to delete task.'),
     });
   }
