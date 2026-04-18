@@ -50,14 +50,16 @@ export class TaskDetailComponent implements OnInit {
     });
   }
 
-  totalWeight(): number {
+  totalPercent(): number {
     return this.weights.reduce((sum, w) => sum + (w.weight || 0), 0);
   }
 
-  effectivePercent(weight: number): string {
-    const total = this.totalWeight();
-    if (total === 0) return '0';
-    return ((weight / total) * 100).toFixed(1);
+  remainingPercent(): number {
+    return Math.round((100 - this.totalPercent()) * 10) / 10;
+  }
+
+  weightsValid(): boolean {
+    return Math.abs(this.totalPercent() - 100) < 0.05;
   }
 
   saveInfo(): void {
@@ -79,7 +81,7 @@ export class TaskDetailComponent implements OnInit {
   }
 
   saveWeights(): void {
-    if (!this.task) return;
+    if (!this.task || !this.weightsValid()) return;
     this.weightsSaved = false;
     const payload = this.weights.map((w) => ({
       category_id: w.category_id,

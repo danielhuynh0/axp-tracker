@@ -36,42 +36,51 @@
   <section class="config-section card">
     <h2>Category Weights</h2>
     <p class="hint">
-      Set a relative weight for each category. Leave at 0 to exclude it from hour distribution.
-      Percentages are calculated automatically from the weights you enter.
+      Enter what percentage of hours should go to each category. Percentages must sum to 100%.
     </p>
 
     <div class="weights-table">
       <div class="weights-header">
         <span>Category</span>
-        <span>Weight</span>
-        <span>Effective %</span>
+        <span>%</span>
       </div>
       @for (w of weights; track w.category_id) {
         <div class="weight-row">
           <span class="category-name">{{ w.category_name }}</span>
-          <input
-            class="weight-input"
-            type="number"
-            min="0"
-            step="1"
-            [(ngModel)]="w.weight"
-          />
-          <span class="pct" [class.pct--active]="w.weight > 0">
-            {{ effectivePercent(w.weight) }}%
-          </span>
+          <div class="pct-input-wrap">
+            <input
+              class="weight-input"
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              [(ngModel)]="w.weight"
+            />
+            <span class="pct-symbol">%</span>
+          </div>
         </div>
       }
+      <div class="weights-total" [class.weights-total--ok]="weightsValid()" [class.weights-total--over]="totalPercent() > 100">
+        <span>Total</span>
+        <span>{{ totalPercent() | number:'1.0-1' }}%</span>
+      </div>
     </div>
 
-    @if (totalWeight() === 0) {
-      <p class="error-msg">At least one category must have a weight greater than 0.</p>
+    @if (!weightsValid() && totalPercent() > 0) {
+      <p class="error-msg">
+        @if (remainingPercent() > 0) {
+          {{ remainingPercent() | number:'1.0-1' }}% remaining to assign.
+        } @else {
+          Total exceeds 100% by {{ -remainingPercent() | number:'1.0-1' }}%.
+        }
+      </p>
     }
 
     <div class="save-row">
       <button
         class="btn btn-primary btn-sm"
         (click)="saveWeights()"
-        [disabled]="totalWeight() === 0"
+        [disabled]="!weightsValid()"
       >
         Save Weights
       </button>

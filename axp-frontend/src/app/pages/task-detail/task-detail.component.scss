@@ -40,7 +40,7 @@
 
 .weights-header {
   display: grid;
-  grid-template-columns: 1fr 100px 100px;
+  grid-template-columns: 1fr 120px;
   padding: 0.5rem 1rem;
   background: #f8f8f8;
   border-bottom: 1px solid #e5e5e5;
@@ -53,18 +53,20 @@
 
 .weight-row {
   display: grid;
-  grid-template-columns: 1fr 100px 100px;
+  grid-template-columns: 1fr 120px;
   align-items: center;
-  padding: 0.6rem 1rem;
+  padding: 0.55rem 1rem;
   border-bottom: 1px solid #f0f0f0;
-
-  &:last-child {
-    border-bottom: none;
-  }
 }
 
 .category-name {
   font-size: 0.9rem;
+}
+
+.pct-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .weight-input {
@@ -80,14 +82,27 @@
   }
 }
 
-.pct {
+.pct-symbol {
   font-size: 0.85rem;
-  color: #bbb;
-  padding-left: 0.5rem;
+  color: #666;
+}
 
-  &--active {
-    color: #1a1a1a;
-    font-weight: 500;
+.weights-total {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  padding: 0.55rem 1rem;
+  background: #f8f8f8;
+  border-top: 1px solid #e5e5e5;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #999;
+
+  &--ok {
+    color: #1e7e34;
+  }
+
+  &--over {
+    color: #c0392b;
   }
 }
 
