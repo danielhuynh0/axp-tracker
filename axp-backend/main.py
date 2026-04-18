@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine, SessionLocal
 import models
 from seed import seed_categories
+from routers import categories, projects, tasks, weekly_entries
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -15,6 +16,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(categories.router)
+app.include_router(projects.router)
+app.include_router(tasks.router)
+app.include_router(weekly_entries.router)
 
 
 @app.on_event("startup")
