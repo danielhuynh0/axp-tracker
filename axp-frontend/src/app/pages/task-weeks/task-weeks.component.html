@@ -1,0 +1,125 @@
+<nav class="breadcrumb">
+  <a routerLink="/projects">Projects</a>
+  <span class="sep">/</span>
+  <a [routerLink]="['/projects', task?.project_id]">{{ projectName }}</a>
+  <span class="sep">/</span>
+  <a [routerLink]="['/tasks', task?.id]">{{ task?.name }}</a>
+  <span class="sep">/</span>
+  <span>Weekly Hours</span>
+</nav>
+
+@if (error) {
+  <p class="error-msg">{{ error }}</p>
+}
+
+@if (weightsError) {
+  <div class="weights-warning card">
+    <p>{{ weightsError }}</p>
+    <a class="btn btn-primary btn-sm" [routerLink]="['/tasks', task?.id]">Configure Weights</a>
+  </div>
+}
+
+@if (task && !weightsError) {
+  <div class="week-layout">
+    <section class="week-form card">
+      <div class="week-selector">
+        <label class="field-label">Select Week</label>
+        <select [(ngModel)]="selectedWeekStr" (ngModelChange)="onWeekChange()">
+          @for (opt of weekOptions; track opt.isoStr) {
+            <option [value]="opt.isoStr">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="week-heading">
+        <h2>{{ selectedWeekLabel }}</h2>
+        @if (selectedEntry) {
+          <span class="badge badge--saved">Saved</span>
+        }
+      </div>
+
+      <div class="form-group hours-group">
+        <label class="field-label">Total Hours Worked This Week</label>
+        <input
+          type="number"
+          min="0.25"
+          step="0.25"
+          [(ngModel)]="totalHoursInput"
+          (ngModelChange)="onHoursChange()"
+          placeholder="e.g. 8.5"
+          class="hours-input"
+        />
+        <span class="hours-hint">must be in 0.25-hour increments</span>
+      </div>
+
+      @if (preview.length > 0) {
+        <div class="breakdown">
+          <div class="breakdown-header">Hour Breakdown</div>
+          <table class="breakdown-table">
+            <tbody>
+              @for (row of preview; track row.category_id) {
+                <tr>
+                  <td class="cat-name">{{ row.category_name }}</td>
+                  <td class="cat-hours">{{ row.hours | number:'1.2-2' }} hrs</td>
+                  <td class="cat-bar-cell">
+                    <div
+                      class="cat-bar"
+                      [style.width.%]="(row.hours / (totalHoursInput || 1)) * 100"
+                    ></div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <div class="save-row">
+        <button
+          class="btn btn-primary"
+          (click)="save()"
+          [disabled]="!isValidHours() || saving"
+        >
+          {{ selectedEntry ? 'Update' : 'Log Hours' }}
+        </button>
+        @if (!isValidHours() && totalHoursInput !== null && totalHoursInput! > 0) {
+          <span class="error-msg">Hours must be in 0.25 increments.</span>
+        }
+        @if (saved) {
+          <span class="success-msg">Saved.</span>
+        }
+      </div>
+    </section>
+
+    @if (entriesExcludingSelected().length > 0) {
+      <section class="history">
+        <h3 class="history-title">Previous Entries</h3>
+        <div class="history-list">
+          @for (entry of entriesExcludingSelected(); track entry.id) {
+            <div
+              class="history-card card"
+              (click)="selectedWeekStr = entry.week_start_date; onWeekChange()"
+              role="button"
+              tabindex="0"
+            >
+              <div class="history-card__header">
+                <span class="history-week">{{ weekLabelFor(entry.week_start_date) }}</span>
+                <span class="history-total">{{ entry.total_hours | number:'1.2-2' }} hrs total</span>
+              </div>
+              <table class="history-breakdown">
+                <tbody>
+                  @for (a of entry.allocations; track a.category_id) {
+                    <tr>
+                      <td class="cat-name">{{ a.category_name }}</td>
+                      <td class="cat-hours">{{ a.hours | number:'1.2-2' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  </div>
+}
