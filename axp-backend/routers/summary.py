@@ -1,6 +1,7 @@
+from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from pydantic import BaseModel
 from database import get_db
 from models import Category, HourAllocation, WeeklyEntry, Task, Project
@@ -13,6 +14,23 @@ class CategorySummary(BaseModel):
     category_name: str
     order: int
     total_hours: float
+
+
+class HistoryAllocation(BaseModel):
+    category_id: int
+    category_name: str
+    hours: float
+
+
+class HistoryEntry(BaseModel):
+    id: int
+    week_start_date: date
+    total_hours: float
+    task_id: int
+    task_name: str
+    project_id: int
+    project_name: str
+    allocations: list[HistoryAllocation]
 
 
 def _all_categories(db: Session) -> list[Category]:
@@ -69,4 +87,37 @@ def project_summary(project_id: int, db: Session = Depends(get_db)):
             total_hours=hours.get(c.id, 0.0),
         )
         for c in _all_categories(db)
+    ]
+
+
+@router.get("/history", response_model=list[HistoryEntry])
+def get_history(db: Session = Depends(get_db)):
+    entries = (
+        db.query(WeeklyEntry)
+        .options(
+            joinedload(WeeklyEntry.hour_allocations).joinedload(HourAllocation.category),
+            joinedload(WeeklyEntry.task).joinedload(Task.project),
+        )
+        .order_by(WeeklyEntry.week_start_date.desc())
+        .all()
+    )
+    return [
+        HistoryEntry(
+            id=e.id,
+            week_start_date=e.week_start_date,
+            total_hours=e.total_hours,
+            task_id=e.task.id,
+            task_name=e.task.name,
+            project_id=e.task.project.id,
+            project_name=e.task.project.name,
+            allocations=[
+                HistoryAllocation(
+                    category_id=a.category_id,
+                    category_name=a.category.name,
+                    hours=a.hours,
+                )
+                for a in sorted(e.hour_allocations, key=lambda a: a.category.order)
+            ],
+        )
+        for e in entries
     ]

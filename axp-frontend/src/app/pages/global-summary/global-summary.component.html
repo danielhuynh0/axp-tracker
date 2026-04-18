@@ -1,11 +1,98 @@
 <div class="page-header">
-  <h1>All Hours — Category Breakdown</h1>
+  <h1>Summary</h1>
 </div>
 
 @if (error) {
   <p class="error-msg">{{ error }}</p>
 }
 
-<div class="card">
-  <app-category-breakdown [data]="data" />
-</div>
+<section class="section">
+  <h2 class="section-title">All-Time Category Breakdown</h2>
+  <div class="card">
+    <app-category-breakdown [data]="summaryData" />
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">Entry History</h2>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label>Project</label>
+      <select [(ngModel)]="filterProject" (ngModelChange)="onProjectFilterChange()">
+        <option value="">All Projects</option>
+        @for (p of projectOptions; track p) {
+          <option [value]="p">{{ p }}</option>
+        }
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Task</label>
+      <select [(ngModel)]="filterTask">
+        <option value="">All Tasks</option>
+        @for (t of taskOptions; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+    </div>
+    @if (filterProject || filterTask) {
+      <button class="btn btn-secondary btn-sm clear-btn" (click)="filterProject = ''; filterTask = ''">
+        Clear filters
+      </button>
+    }
+  </div>
+
+  @if (filteredEntries.length === 0) {
+    <p class="notice">No entries match the current filters.</p>
+  } @else {
+    <div class="table-scroll">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th class="th-sortable" (click)="setSort('week')">
+              Week <span class="sort-icon">{{ sortIcon('week') }}</span>
+            </th>
+            <th class="th-sortable" (click)="setSort('project')">
+              Project <span class="sort-icon">{{ sortIcon('project') }}</span>
+            </th>
+            <th class="th-sortable" (click)="setSort('task')">
+              Task <span class="sort-icon">{{ sortIcon('task') }}</span>
+            </th>
+            <th class="th-sortable th-num" (click)="setSort('total')">
+              Total <span class="sort-icon">{{ sortIcon('total') }}</span>
+            </th>
+            @for (cat of categories; track cat.id) {
+              <th class="th-sortable th-num th-cat" (click)="setSort(cat.name)">
+                {{ cat.name }} <span class="sort-icon">{{ sortIcon(cat.name) }}</span>
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of filteredEntries; track entry.id) {
+            <tr>
+              <td class="td-week">{{ weekLabel(entry.week_start_date) }}</td>
+              <td>
+                <a [routerLink]="['/projects', entry.project_id]" class="table-link">
+                  {{ entry.project_name }}
+                </a>
+              </td>
+              <td>
+                <a [routerLink]="['/tasks', entry.task_id, 'weeks']" class="table-link">
+                  {{ entry.task_name }}
+                </a>
+              </td>
+              <td class="td-num td-total">{{ entry.total_hours | number:'1.2-2' }}</td>
+              @for (cat of categories; track cat.id) {
+                <td class="td-num" [class.td-zero]="hoursFor(entry, cat.name) === 0">
+                  {{ hoursFor(entry, cat.name) | number:'1.2-2' }}
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="row-count">{{ filteredEntries.length }} {{ filteredEntries.length === 1 ? 'entry' : 'entries' }}</p>
+  }
+</section>
