@@ -1,0 +1,87 @@
+<nav class="breadcrumb">
+  <a routerLink="/projects">Projects</a>
+  <span class="sep">/</span>
+  <a [routerLink]="['/projects', task?.project_id]">{{ projectName }}</a>
+  <span class="sep">/</span>
+  <span>{{ task?.name }}</span>
+</nav>
+
+@if (error) {
+  <p class="error-msg">{{ error }}</p>
+}
+
+@if (task) {
+  <section class="config-section card">
+    <h2>Task Info</h2>
+
+    <div class="form-group">
+      <label>Name</label>
+      <input [(ngModel)]="taskName" />
+    </div>
+    <div class="form-group">
+      <label>Description <span class="optional">(optional)</span></label>
+      <textarea [(ngModel)]="taskDescription"></textarea>
+    </div>
+
+    <div class="save-row">
+      <button class="btn btn-primary btn-sm" (click)="saveInfo()" [disabled]="!taskName.trim()">
+        Save
+      </button>
+      @if (infoSaved) {
+        <span class="success-msg">Saved.</span>
+      }
+    </div>
+  </section>
+
+  <section class="config-section card">
+    <h2>Category Weights</h2>
+    <p class="hint">
+      Set a relative weight for each category. Leave at 0 to exclude it from hour distribution.
+      Percentages are calculated automatically from the weights you enter.
+    </p>
+
+    <div class="weights-table">
+      <div class="weights-header">
+        <span>Category</span>
+        <span>Weight</span>
+        <span>Effective %</span>
+      </div>
+      @for (w of weights; track w.category_id) {
+        <div class="weight-row">
+          <span class="category-name">{{ w.category_name }}</span>
+          <input
+            class="weight-input"
+            type="number"
+            min="0"
+            step="1"
+            [(ngModel)]="w.weight"
+          />
+          <span class="pct" [class.pct--active]="w.weight > 0">
+            {{ effectivePercent(w.weight) }}%
+          </span>
+        </div>
+      }
+    </div>
+
+    @if (totalWeight() === 0) {
+      <p class="error-msg">At least one category must have a weight greater than 0.</p>
+    }
+
+    <div class="save-row">
+      <button
+        class="btn btn-primary btn-sm"
+        (click)="saveWeights()"
+        [disabled]="totalWeight() === 0"
+      >
+        Save Weights
+      </button>
+      @if (weightsSaved) {
+        <span class="success-msg">Saved.</span>
+      }
+    </div>
+  </section>
+
+  <div class="bottom-nav">
+    <a class="btn btn-primary" [routerLink]="['/tasks', task.id, 'weeks']">Log Hours →</a>
+  </div>
+}

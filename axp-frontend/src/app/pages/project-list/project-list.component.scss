@@ -1,0 +1,38 @@
+.optional {
+  font-weight: 400;
+  color: #999;
+}
+
+.project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.project-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    border-color: #aaa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  }
+
+  &__body {
+    flex: 1;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+  }
+
+  &__desc {
+    margin-top: 0.25rem;
+    color: #666;
+    font-size: 0.85rem;
+  }
+}

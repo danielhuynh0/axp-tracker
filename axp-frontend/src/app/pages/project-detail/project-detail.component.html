@@ -1,0 +1,71 @@
+<nav class="breadcrumb">
+  <a routerLink="/projects">Projects</a>
+  <span class="sep">/</span>
+  <span>{{ project?.name }}</span>
+</nav>
+
+@if (error) {
+  <p class="error-msg">{{ error }}</p>
+}
+
+@if (project) {
+  <div class="page-header">
+    <h1>{{ project.name }}</h1>
+  </div>
+
+  @if (project.description) {
+    <p class="project-desc">{{ project.description }}</p>
+  }
+
+  <section class="tasks-section">
+    <div class="section-header">
+      <h2>Tasks</h2>
+      <button class="btn btn-primary btn-sm" (click)="openForm()">+ Add Task</button>
+    </div>
+
+    @if (showForm) {
+      <div class="inline-form">
+        <div class="form-group">
+          <label>Task Name</label>
+          <input [(ngModel)]="newTaskName" placeholder="e.g. Site Analysis" autofocus />
+        </div>
+        <div class="form-group">
+          <label>Description <span class="optional">(optional)</span></label>
+          <textarea [(ngModel)]="newTaskDescription" placeholder="Brief description"></textarea>
+        </div>
+        <div class="form-row">
+          <button class="btn btn-primary btn-sm" (click)="createTask()" [disabled]="!newTaskName.trim()">
+            Create
+          </button>
+          <button class="btn btn-secondary btn-sm" (click)="cancelForm()">Cancel</button>
+        </div>
+      </div>
+    }
+
+    @if (tasks.length === 0 && !showForm) {
+      <p class="notice">No tasks yet. Add one to start logging hours.</p>
+    }
+
+    <div class="task-list">
+      @for (task of tasks; track task.id) {
+        <div class="task-row card">
+          <div class="task-row__name">{{ task.name }}</div>
+          @if (task.description) {
+            <div class="task-row__desc">{{ task.description }}</div>
+          }
+          <div class="task-row__actions">
+            <a class="btn btn-secondary btn-sm" [routerLink]="['/tasks', task.id]">
+              Configure
+            </a>
+            <a class="btn btn-primary btn-sm" [routerLink]="['/tasks', task.id, 'weeks']">
+              Log Hours
+            </a>
+            <button class="btn btn-danger btn-sm" (click)="deleteTask(task.id, $event)">
+              Delete
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+}

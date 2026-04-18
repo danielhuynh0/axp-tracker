@@ -1,0 +1,55 @@
+.project-desc {
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.optional {
+  font-weight: 400;
+  color: #999;
+}
+
+.tasks-section {
+  margin-top: 0.5rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.25rem;
+
+  &__name {
+    font-weight: 600;
+    flex: 1;
+  }
+
+  &__desc {
+    color: #666;
+    font-size: 0.85rem;
+    flex: 2;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+}

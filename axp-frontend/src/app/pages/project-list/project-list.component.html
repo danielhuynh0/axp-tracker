@@ -1,0 +1,45 @@
+<div class="page-header">
+  <h1>Projects</h1>
+  <button class="btn btn-primary" (click)="openForm()">+ New Project</button>
+</div>
+
+@if (error) {
+  <p class="error-msg">{{ error }}</p>
+}
+
+@if (showForm) {
+  <div class="inline-form">
+    <div class="form-group">
+      <label>Project Name</label>
+      <input [(ngModel)]="newName" placeholder="e.g. Community Library" autofocus />
+    </div>
+    <div class="form-group">
+      <label>Description <span class="optional">(optional)</span></label>
+      <textarea [(ngModel)]="newDescription" placeholder="Brief description"></textarea>
+    </div>
+    <div class="form-row">
+      <button class="btn btn-primary btn-sm" (click)="create()" [disabled]="!newName.trim()">
+        Create
+      </button>
+      <button class="btn btn-secondary btn-sm" (click)="cancelForm()">Cancel</button>
+    </div>
+  </div>
+}
+
+@if (projects.length === 0 && !showForm) {
+  <p class="notice">No projects yet. Create one to get started.</p>
+}
+
+<div class="project-list">
+  @for (project of projects; track project.id) {
+    <div class="project-card card" (click)="goTo(project.id)" role="button" tabindex="0">
+      <div class="project-card__body">
+        <h3>{{ project.name }}</h3>
+        @if (project.description) {
+          <p class="project-card__desc">{{ project.description }}</p>
+        }
+      </div>
+      <button class="btn btn-danger btn-sm" (click)="delete(project.id, $event)">Delete</button>
+    </div>
+  }
+</div>
